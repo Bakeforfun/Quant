@@ -1,0 +1,186 @@
+\documentclass[11pt]{report}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\begin{document}
+
+\title{Trading}
+\author{Vladislav Zakatov \& Euan Sinclair \& Rishi K. Narang}
+\date{}
+\maketitle
+
+\tableofcontents
+
+\part{Portfolio Management}
+
+	\chapter{Preface}
+		Almost any reasonably balanced fixed combination of the four assets outperformed most professional money managers over the same period. For example, a ``simpleton's portfolio'' consisting of one quarter each U.S. large stocks, U.S. small stocks, foreign stocks, and U.S. high-quality bonds had a higher return, with much lower risk, than large U.S. stocks alone (represented by the S\&P 500 index). The S\&P 500, in turn, performed better than 75\% of professional money managers over the same period.
+
+		Most experienced investors learn that the key to long-term success lies in a coherent strategy for allocation among broad categories of assets, principally foreign and domestic stocks and bonds. They also understand that market timing and stock or mutual fund picking are nearly impossible long term. They are at best a distraction. Put another way, it is far more important to come up with the right proportion of foreign stocks, U.S. stocks, foreign bonds, and U.S. bonds than it is to pick the ``best'' stocks or mutual funds or to ``call'' the tops or bottoms of the markets. (As we shall see later, nobody consistently calls the market, and almost nobody picks stocks or mutual funds with any persistent skill).
+
+		Asset allocation policy is much more important than stock picking and market timing combined and is the only factor affecting your investments that you can actually influence.
+
+\part{Quantitative Trading}
+	
+	\chapter{Quantitative trading system structure}
+
+		Figure~\ref{fig:quantsys} shows a schematic of a typical quantitative trading system.
+
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=.9\textwidth]{quantsys.png}
+			\caption{Basic Structure of a Quant Trading Strategy}
+			\label{fig:quantsys}
+		\end{figure}
+
+		The trading system has three modules -- an \textbf{alpha model}, a \textbf{risk model}, and a \textbf{transaction cost model} -- which feed into a \textbf{portfolio construction model}, which in turn interacts with the \textbf{execution model}. The \textit{alpha model} is designed to predict the future of the instruments the quant wants to consider trading for the purpose of generating returns. For example, in a trend-following strategy in the futures markets, the alpha model is designed to forecast the direction of whatever futures markets the quant has decided to include in his strategy.
+
+		\textit{Risk models}, by contrast, are designed to help limit the amount of exposure the quant has to those factors that are unlikely to generate returns but could drive losses. For example, the trend follower could choose to limit his directional exposure to a given asset class, such as commodities, because of concerns that too many forecasts he follows could line up in the same direction, leading to excess risk; the risk model would contain the levels for these commodity exposure limits.
+
+		\textit{The transaction cost model} is used to help determine the cost of whatever trades are needed to migrate from the current portfolio to whatever new portfolio is desirable to the portfolio construction model. Almost any trading transaction costs money, whether the trader expects to profit greatly or a little from the trade. Staying with the example of the trend follower, if a trend is expected to be small and last only a short while, the transaction cost model might indicate that the cost of entering and exiting the trade is greater than the expected profits from the trend.
+
+		The alpha, risk, and transaction cost models then feed into a \textit{portfolio construction model}, which balances the tradeoffs presented by the pursuit of profits, the limiting of risk, and the costs associated with both, thereby determining the best portfolio to hold. Having made this determination, the system can compare the current portfolio to the new target portfolio, with the differences between the current portfolio and the target portfolio representing the trades that need to be executed.
+
+		The current portfolio reflects the positions the quant trader currently owns. After running the portfolio construction model, the quant trader generates the new target portfolio weights. The difference between the two indicates the trades that now need to be executed, which is the job of the \textit{execution algorithm}. The execution algorithm takes the required trades and, using various other inputs such as the urgency with which the trades need to be executed and the dynamics of the liquidity in the markets, executes trades in an efficient and low-cost manner.
+
+	\chapter{Alpha models}
+
+		By conventional definition, alpha is the portion of the investor's return not due to the market benchmark, or, in other words, the value added (or lost) solely because of the manager. What is common to all pursuits of alpha is that they are in essence designed to time the selection and/or sizing of portfolio holdings.
+
+		There are two types of alpha models: \textbf{theory-driven} and \textbf{data-driven}. Theory driven traders start with observations of the markets, think of a generalized theory that could explain the observed behavior, then rigorously test it with market data to see if the theory is shown to be either untrue or supported by the outcome of the test. Data-driven traders (``data miners'') believe that correctly performed empirical observation and analysis of the data can obviate the need for theory. They pursue to detect recognizable patterns in the data with careful application of the right techniques.
+
+		\section{Theory-driven alpha models}
+
+			\begin{figure}[htbp]
+				\centering
+				\includegraphics[width=.9\textwidth]{alphatheory.png}
+				\caption{A taxonomy of theory-driven alpha models}
+				\label{fig:alphatheory}
+			\end{figure}
+
+			Theory-driven alpha models can be classified as follows:
+			\begin{itemize}
+				\item Price-related data:
+					\begin{itemize}
+						\item trend;
+						\item reversion.
+					\end{itemize}
+				\item Fundamental data:
+					\begin{itemize}
+						\item value/yield;
+						\item growth;
+						\item quality.
+					\end{itemize}
+			\end{itemize}
+
+			\subsection{Strategies utilizing price-related data}
+
+				\subsubsection{Trend following}
+
+					Trend following is based on the theory that markets sometimes move for long enough in a given direction that one can identify this trend and ride it. The economic rationale for the existence of trends is based on the idea of consensus-building among market participants. It bears mentioning that there is an alternate explanation of why trends happen; it is affectionately known as the \textit{greater fools theory}. The idea here is that, because people believe in trends, they tend to start buying anything that's been going up and selling anything that's been going down, which itself perpetuates the trend. The key is always to sell your position to someone more ``foolish,'' and thereby to avoid being the last fool. Either theoretical explanation, coupled with the evidence in markets, seems a valid enough reason to believe in trends.
+
+					Trend followers typically look for a significant move in a given direction in an instrument. They bet that, once a significant move has occurred, it will persist because this significant move is a likely sign of a growing consensus (or a parade of fools). There are many ways of defining what kind of move is significant, but the idea is the same regardless. Perhaps the most obvious and well-known example of a strategy that depends on trends is in the world of futures trading, or commodities trading advisors (CTAs). Figure~\ref{fig:MAtrend} illustrates the downward trend in equities that began in the fourth quarter of 2007. One way to define a trend for trading purposes, known as a moving average crossover indicator, is to compare the average price of the index over a shorter time period (e.g., 60 days) to that of a longer time period (e.g., 200 days). When the shorter-term average price is below the longer-term average price, the index is said to be in a negative trend, and when the shorter-term average price is above the longer-term average, the index is in a positive trend. As such, a trend follower using this kind of strategy might have gotten short the S\&P Index around the end of 2007, as indicated by the point at which the two moving averages cross over each other, and remained short for most or all of 2008.
+
+					\begin{figure}[htbp]
+						\centering
+						\title{S\&P 500 Index, October 3, 2007 -- December 9, 2008}
+						\includegraphics[width=.9\textwidth]{MAtrend.png}
+						\caption{S\&P 500 Trend}
+						\label{fig:MAtrend}
+					\end{figure}
+
+					Lest it seem like this is an overly rosy picture of trend following, it should be stated clearly: These strategies come with a great deal of risk alongside their lofty returns. The typical successful trend follower earns less than one point of return for every point of downside risk delivered. In other words, to earn 50 percent per year, the investor must be prepared to suffer a loss greater than 50 percent at some point. In short, the returns of this strategy are streaky and highly variable.
+
+					This is not only true of trend following. Indeed, each of the major classes of alpha described in this chapter is subject to relatively long periods of poor returns. This is because the behaviors they seek to profit from in the markets are not ever-present but rather are unstable and episodic. The idea is to make enough money in the good times and manage the downside well enough in the bad times to make the whole exercise worthwhile.
+
+				\subsubsection{Mean reversion}
+
+					The theory behind mean reversion strategies is that there exists a center of gravity around which prices fluctuate, and it is possible to identify both this center of gravity and what fluctuation is sufficient to warrant making a trade. The rationale behind this theory can be found in a few ways. First, there are sometimes short-term imbalances among buyers and sellers due simply to liquidity that leads to an instrument being ``over-bought'' or ``oversold.'' To return to the example mentioned earlier, imagine that a stock has been added to a well-followed index, such as the S\&P 500. This forces any fund that is attempting to track the index to run out and buy the stock, and, in the short term, there might not be enough sellers at the old price to accommodate them. Therefore, the price moves up somewhat abruptly, which increases the probability that the price will reverse again at some point, when the excess demand from index buyers has subsided. Another rationale to explain the existence of mean-reverting behavior is that market participants are not all aware of each other's views and actions, and as they each place orders that drive a price toward its new equilibrium level, the price can overshoot due to excess supply or demand at any given time. Regardless of the cause of the short-term imbalance between supply and demand, mean reversion traders are frequently being paid to provide liquidity because they are bucking current trends and can therefore often buy on the bid and sell on the offer, thereby capturing the bid/ask spread.
+
+					Interestingly, trend and mean reversion strategies are not necessarily at odds with each other. Longer-term trends can occur, even as smaller oscillations around these trends occur in the shorter term. In fact, some quants use both of these strategies in conjunction. Mean reversion traders must identify the current ``mean'' or ``equilibrium'' and then must determine what amount of divergence from that equilibrium is sufficient to warrant a trade. As in the case of trend following, there are a large number of ways of defining the ``mean'' and the reversal. It is worth noting that when discretionary traders implement mean reversion strategies, they are typically known as contrarians.
+
+					Perhaps the best-known strategy based on the mean reversion concept is known as \textit{statistical arbitrage}, which bets on the convergence of the prices of similar stocks whose prices have diverged. Stat arb ushered in an important change in world view, one that focused on whether company A was over- or undervalued relative to company B rather than whether company A was simply cheap or expensive in itself. This important evolution would lead to the creation of many strategies based on forecasts of relative attractiveness.
+
+					Figure~\ref{fig:reversionspread} shows a simplified example of the mean-reverting behavior evident between similar instruments, in this case Merrill Lynch (MER) and Charles Schwab (SCHW). The spread between these two companies oscillates rather consistently in a reasonably narrow range for long periods. This effect allows a trader to wait for significant divergences and then bet on a reversion back to the equilibrium level.
+
+					\begin{figure}[htbp]
+						\centering
+						\title{SCHW vs. MER Daily Spread vs. Trailing Five-Day Spread, 2004 -- 2006}
+						\includegraphics[width=.9\textwidth]{reversionspread.png}
+						\caption{A taxonomy of theory-driven alpha models}
+						\label{fig:reversionspread}
+					\end{figure}
+
+					Trend and mean reversion strategies represent a large portion of all quant trading. After all, price data are plentiful and always changing, presenting the quant with many opportunities to trade. It may be interesting to note that trend and mean reversion, though they are theoretically opposite ideas, both seem to work. How is this possible? Largely, it's possible because of different timeframes. It is obviously correct that both strategies can't possibly be made to be exactly opposite while both making money at the same time. However, there is no reason to create both strategies to be exactly the same. Trends tend to occur over longer time horizons, whereas reversions tend to happen over shorter-term time horizons. Figure~\ref{fig:snp500trendreversion} shows this effect in action. You can see that there are indeed longer-term trends and shorter-term mean reversions that take place. In fact, you can also see that the strategies are likely to work well at different times. From 2000 to 2002 and again in 2008, a trend strategy likely exhibits better performance, since the markets were trending very strongly during these periods. From 2003 to 2007, mean-reverting behavior was more prevalent. Yet both strategies are likely to have made money for the period as a whole.
+
+					\begin{figure}[htbp]
+						\centering
+						\title {Trend and mean reversion in the  S\&P 500 Index}
+						\begin{subfigure}[b] {0.9\textwidth}
+							\includegraphics[width=\linewidth]{snp500trend.png}	
+						\end{subfigure}
+						\begin{subfigure}[b] {0.9\textwidth}
+							\includegraphics[width=\linewidth]{snp500reversion.png}	
+						\end{subfigure}
+						\caption{Trend and reversion coexisting}
+						\label{fig:snp500trendreversion}
+					\end{figure}
+
+			\subsection{Strategies utilizing fundamental data}
+
+				\subsubsection{Value/yield}
+
+					Value strategies are well known and are usually associated with equity trading, though such strategies can be used in other markets as well. There are many metrics that people use to describe value in various asset classes, but most of them end up being ratios of some fundamental factor versus the price of the instrument, such as the \textbf{price-to-earnings (P/E) ratio}. Quants tend to invert such ratios, keeping prices in the denominator. An inverted P/E ratio, or an E/P ratio, is also known as \textit{earnings yield}. Note that investors traditionally already do this with dividends, hence the \textit{dividend yield}, another commonly used measure of value. The basic concept of value strategies is that the higher the yield, the cheaper the instrument. The benefit of the conversion of ratios to yields is that it allows for much easier and more consistent analysis. Because ratios with price in the numerator and some fundamental figure in the denominator exhibit of this sort of misbehavior, quants tend to use the inverted yield forms of these same ratios. This idea is demonstrated in Figure~\ref{fig:PEratio}, which shows that the E/P ratio is well behaved for any level of earnings per share for a hypothetical stock with a price greater than \$1 (in the example, we used \$20 per share as the stock price). By contrast, the P/E ratio is rather poorly behaved and does not lend itself well to analysis and is not even properly defined when earnings per share are zero.
+
+					\begin{figure}[htbp]
+						\centering
+						\includegraphics[width=.9\textwidth]{PEratio.png}
+						\caption{P/E versus E/P (``Earnings Yield'')}
+						\label{fig:PEratio}
+					\end{figure}
+
+					Most often, value is thought of as a strategy that is defined by ``buying cheap.'' In reality, the idea behind value investing is that markets tend to overestimate the risk in risky instruments and possibly to underestimate the risk in less risky ones. Therefore, it can pay off to own the more risky asset and/or sell the less risky asset. The argument for this theory is that sometimes instruments have a higher yield than is justified by their fundamentals simply because the market is requiring a high yield for that kind of instrument at the moment. An investor who can purchase this instrument while it has a high yield can profit from the movement over time to a more efficient, ``fair'' price.\footnote{Ray Ball, a professor of accounting at the University of Chicago's Booth School of Business, wrote a paper, ``Anomalies in Relationships Between Securities' Yields and Yield-Surrogates'', which echoes the idea that higher-yielding stocks—those with higher earnings yields—are likely those for which investors expect to receive higher returns and greater risks.}
+
+					When done on a relative basis, that is, buying the undervalued security and selling the overvalued one against it, this strategy is also known as a \textit{carry trade}. One receives a higher yield from the long position and finances this with the short position, on which a lower yield must be paid. The spread between the yield received and the yield paid is the carry. For instance, one could sell short \$1,000,000 of U.S. bonds and use the proceeds to buy \$1,000,000 of higher-yielding Mexican bonds. Graham and Dodd, in their landmark book ``Security Analysis'', propose that value trading offers investors a margin of safety. In many respects, this margin of safety can be seen clearly in the concept of carry. If nothing else happens, a carry trade offers an investor a baseline rate of return, which acts as the margin of safety Graham and Dodd were talking about.
+
+					Carry trading is an enormously popular kind of strategy for quants (and discretionary traders) in currencies, where the currency of a country with higher short-term yields is purchased against a short position in the currency of a country with relatively low short-term yields. For example, if the European Central Bank's target interest rate is set at 4.25 percent, whereas the U.S. Federal Reserve has set the Fed Funds rate at 2 percent, a carry trade would be to buy Euros against the U.S. dollar. This is a classic value trade because the net yield is 2.25 percent (4.25 percent gained on the Euro position, less 2 percent paid in U.S. interest), and this provides a margin of safety. If the trade doesn't work, the first 2.25 percent of the loss on it is eliminated by the positive carry.
+
+					Another important example of value trading is in equities, where many kinds of traders seek to define metrics of ``cheapness,'' such as \textbf{earnings before interest, taxes, depreciation, and amortization (EBITDA) versus enterprise value (EV)} or \textbf{book value to price}. Book value per share versus price (\textbf{book yield} or \textbf{book-to-price}) is also a fairly common factor, as it has been among quants since Fama and French popularized it in their papers. Most quant equity traders who use value strategies are seeking relative value rather than simply making an assessment of whether a given stock is cheap or expensive. This strategy is commonly known as quant long/short (QLS). QLS traders tend to rank stocks according to their attractiveness based on various factors, such as value, and then buy the higher-ranked stocks while selling short the lower-ranked ones. The presumption is that a stock with a higher book-to-price ratio might outperform stocks with lower book-to-price ratios over the coming quarters.
+
+				\subsubsection{Growth}
+
+					Growth strategies seek to make predictions based on the asset in question's expected or historically observed level of economic growth. Some examples of such ideas could be \textbf{gross domestic product (GDP) growth} or \textbf{earnings growth}. That a given stock is a growth asset implies nothing about its valuation or yield. The theory here is that, all else equal, it is better to buy assets that are experiencing rapid economic growth and/or to sell assets that are experiencing slow or negative growth. Some growth metrics, like the \textbf{price/earnings-to-growth (PEG) ratio} (PE ratio vs. EPS growth rate), are basically a forward-looking concept of value, that is, they compare growth expectations to value expectations to see whether a given instrument is fairly pricing in the positive or negative growth that the trader believes the asset will likely experience. If you expect an asset to grow rapidly but the market has already priced the asset to account for that growth, there is no growth trade to be made. In fact, if the market has priced in a great deal more growth than you expect, it might even be reasonable to short the instrument. But certainly many forms of growth trading are simply focused on buying rapidly growing assets regardless of price and selling assets with stagnant or negative growth, even if they are very cheap (or offer high yields) already.
+
+					The justification for growth investing is that growth is typically experienced in a trending manner, and the strongest growers are typically becoming more dominant relative to their competitors. In the case of a company, you could see the case being made that a strong grower is quite likely to be in the process of winning market share from its weaker-growing competitors. Growth investors try to be early in the process of identifying growth and, hence, early in capturing the implied increase in the future stature of a company. We can see examples of both macroeconomic growth strategies and microeconomic growth strategies in the quant trading world. At the macro level, some foreign exchange trading concepts are predicated on the idea that it is good to be long currencies of countries that are experiencing relatively strong growth, because it is likely that these will have higher relative interest rates in the future than weaker-growth or recession economies, which makes this a sort of forward-looking carry trade.
+
+					In the quant equity world, the QLS community frequently also utilizes signals relating to growth to help diversify their alpha models. Note that an important variant of growth trading utilized by a wide variety of quant and discretionary equity traders focuses on analysts' earnings estimate revisions. Sell-side analysts working at various brokerage houses publish their estimates and release occasional reports about the companies they cover. The thesis is identical to any other growth strategy, but the idea is to try to get an early glimpse of a company's growth by using the analysts' expectations rather than simply waiting for the company itself to report its official earnings results. Because this strategy depends on the views of market analysts or economists, it is called a \textit{sentiment-based strategy} (as opposed to \textit{fundamental strategies} that use official releases by corporations or governments). The quant community does not universally agree that sentiment-based strategies, such as the estimate revision idea just mentioned, are nothing more than variants of growth strategies, but it is my experience that these two are highly enough correlated in practice to warrant their being treated as close cousins. After all, too often Wall Street analysts' future estimates of growth look a lot like extrapolations of recent historical growth.
+
+				\subsubsection{Quality}
+
+					The final kind of theory-driven fundamental alpha is called \textit{quality}. A quality investor believes that, all else being equal, it is better to own instruments that are of high quality and better to sell or be short instruments of poor quality. The justification for this strategy is that capital safety is important, and neither growth nor value strategies really capture this concept. A strategy focused on owning higher-quality instruments may help protect an investor, particularly in a stressful market environment. Not coincidentally, these are frequently termed \textit{flight-to-quality} environments. This kind of strategy is easily found in quant equity trading but not as commonly in macroeconomic types of quant trading. A typical kind of QLS signal focused on quality might look at the debt-to-equity ratios of stocks to help determine which ones to buy, the idea being that less-leveraged companies are considered higher quality than more-leveraged companies, all else equal. Another example is an \textit{earnings quality} signal, which attempts to measure how close are a company's true economic earnings (as measured by, say, the free cash flow) to the reported earnings-per-share numbers. Such strategies especially gained prominence in the wake of the accounting scandals of 2001 and 2002 (Enron and WorldCom, for example), which highlighted that sometimes publicly traded companies are run by folks who are trying harder manage their financial statements than manage their companies. Some quality signals focus on the diversification of a company's sources of earnings (or of the drivers of GDP growth for an economy), with the idea being that higher-quality companies will have more diversified earnings sources. Recently, quality has been a particularly important issue, and a particularly successful factor, in predicting the relative prices of banking stocks, probably because of the credit crisis-roiled markets in 2008. In particular, some quality factors helped traders detect, avoid, and/or sell short those banks with the most leverage or the most exposure to mortgage-related businesses, thereby allowing these traders to avoid or even profit from the 2008 credit crisis.
+
+		\section{Data-driven alpha models}
+
+			Data mining, when done well, is based on the premise that the data tell you what is likely to happen next, based on some patterns that are recognizable using certain analytical techniques. When used as alpha models, the inputs are usually sourced from exchanges (mostly prices), and these strategies typically seek to identify patterns that have some explanatory power about the future.
+
+			There are two advantages to these approaches. First, compared with theory-driven strategies, data mining is considerably more technically challenging and far less widely practiced. This means that there are fewer competitors, which is helpful. Second, data-driven strategies are able to discern behaviors whether they have been already named under the banner of some theory or not, which allows them to discover that something happens without having to understand why.
+ 			
+ 			For example, many high-frequency traders favor an entirely empirical, data-mining approach when designing their short-term trading strategies for equity, futures and foreign exchange markets. These data-mining strategies may be more successful in high frequency because, if designed well, they are able to discern how the market behaves without having to worry about the economic theory or rationalization behind this behavior. Since there is not much good literature at this time about the theoretical underpinnings of human and computerized trading behaviors at very short-term time horizons (i.e., minutes or less), an empirical approach may actually be able to outperform a theoretical approach at this timescale. Furthermore, at this timescale there is so much more data to work with that the empirical researcher has a better chance of finding statistically significant results in his testing.
+
+			However, data-mining strategies also have many shortcomings. The researcher must decide what data to feed the model. If he allows the model to use data that have little or no connection to what he is trying to forecast he may find results that are seemingly significant but are in reality entirely spurious. Furthermore, if the researcher chooses the set of all data generally thought to be useful in predicting markets, the amount of searching the algorithms must conduct is so enormous as to be entirely impractical. To run a relatively thorough searching algorithm over, say, two years of intraday tick data, with a handful of inputs, might take a single computer processor about three months of continuous processing before it finds the combinations of data that have predictive power. If this was not difficult enough, whatever strategies are found in this manner require the past to look at least reasonably like the future, although the future doesn't tend to cooperate with this plan very often or for very long. To adjust for this problem, the data-mining strategy requires nearly constant adjustment to keep up with the changes going on in markets, an activity that has many risks in itself.
+			
+			A second problem is that generating alphas using solely data-mining algorithms is a somewhat dubious exercise. The inputs are noisy, containing a great number of false signals that act like traps for data miners. In general, strategies that use data-mining techniques to forecast markets do not work, though there are a few exceptions. It is worth noting that the strategies employed by most successful data miners end up looking a lot like trending or reverting strategies.
+
+		\section{Implementing strategies}
+
+			\subsection{Forecast Target}
+
+				The first key component of implementation is to understand exactly what the model is trying to forecast. Models can forecast the direction, magnitude, and/or duration of a move and furthermore can include an assignment of confidence or probability for their forecasts. Many models forecast direction only, most notably the majority of trend-following strategies in futures markets. They seek to predict whether an asset price will rise or fall, and nothing more. Still others have specific forecasts of the size of a move, either in the form of an expected return or a price target. Some models, though they are far less common, also seek to identify how long a move might take. If the forecasted behavior is not exhibited within the defined time window, the trade is considered a failure and is exited.
+
+				Finally, the signal strength is an important (but not ubiquitous) aspect of the quant model. Signal strength is defined by a larger expected return and/or by a higher likelihood of a return. The larger the expected return (i.e., the further the price target is from the current price), the greater the strength of the signal, holding confidence levels constant. Similarly, the more confidence in a signal, the greater the signal strength, holding expected returns constant. In general, though certainly not always, a higher level of signal strength results in a bigger bet being taken on a position. This is only rational. Imagine that you believe two stocks, Exxon Mobil (XOM) and Chevron (CVX), both will go up, but you have either a higher degree of confidence or a larger expected return in the forecast for XOM. It stands to reason that you will generally be willing to take a bigger bet on XOM than on CVX because XOMoffers a more certain and/or larger potential return. The same holds for quant models, which generally give greater credence to a forecast made with a relatively high degree of confidence or large expected return.
+
+\end{document}
