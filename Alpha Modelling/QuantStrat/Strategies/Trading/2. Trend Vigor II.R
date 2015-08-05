@@ -115,6 +115,7 @@ delta=.2
 #delta=.05
 #delta=0
 period=100
+#period=20
 
 # Indicators
 add.indicator(strategy.st, name="TVI", arguments=list(x=quote(Cl(mktdata)), 

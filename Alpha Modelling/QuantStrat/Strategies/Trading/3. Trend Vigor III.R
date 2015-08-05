@@ -1,9 +1,11 @@
 ##### Information #####
-# Trend Vigor Part II–the Delta parameter, Ehlers entries and exits, and (vaguely) intelligent portfolio management.
-# Posted on May 29, 2014 by Ilya Kipnis
-# Posted in Dr. John Ehlers, ETFs, QuantStrat, R, Trading, Uncategorized
-# https://quantstrattrader.wordpress.com/2014/05/29/trend-vigor-part-ii-the-delta-parameter-ehlers-entries-and-exits-and-vaguely-intelligent-portfolio-management/
+# Trend Vigor Part III: ATR position sizing, Annualized Sharpe above 1.4, and Why Leverage Is Pointless
+# Posted on June 11, 2014 by Ilya Kipnis
+# Posted in Dr. John Ehlers, ETFs, QuantStrat, R, Trading
+# https://quantstrattrader.wordpress.com/2014/06/11/trend-vigor-part-iii-atr-position-sizing-annualized-sharpe-above-1-4-and-why-leverage-is-pointless/
 # https://github.com/IlyaKipnis
+
+# http://www.followingthetrend.com/2014/01/why-leverage-is-pointless/
 
 ##### Motivation #####
 # Some common wisdom about both mean-reverting and trend-following strategies.
